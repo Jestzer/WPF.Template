@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System.Media;
+using System.Net.Http;
 using System.Text.Json;
 using System.Windows;
 using System.Windows.Input;
@@ -76,7 +77,7 @@ namespace WPF.Template
                         latestVersionString = latestVersionString.TrimStart('v');
 
                         // Parse the version string.
-                        Version latestVersion = new Version(latestVersionString);
+                        Version latestVersion = new(latestVersionString);
 
                         // Compare the current version with the latest version.
                         if (currentVersion.CompareTo(latestVersion) < 0)
@@ -85,54 +86,35 @@ namespace WPF.Template
                             ErrorWindow errorWindow = new();
                             errorWindow.Owner = this;
                             errorWindow.ErrorTextBlock.Text = "";
+                            errorWindow.URLTextBlock.IsEnabled = true;
                             errorWindow.URLTextBlock.Visibility = Visibility.Visible;
                             errorWindow.Title = "Check for updates";
                             errorWindow.ShowDialog();
+                            errorWindow.URLTextBlock.IsEnabled = false;
                         }
                         else
                         {
-                            // The current version is up-to-date.
-                            ErrorWindow errorWindow = new();
-                            errorWindow.Owner = this;
-                            errorWindow.Title = "Check for updates";
-                            errorWindow.ErrorTextBlock.Text = "You are using the latest release available.";
-                            errorWindow.ShowDialog();
+                            ShowUpdateWindow("You are using the latest release available.", "Check for updates");
                         }
                     }
                     catch (JsonException ex)
                     {
-                        ErrorWindow errorWindow = new();
-                        errorWindow.Owner = this;
-                        errorWindow.Title = "Check for updates";
-                        errorWindow.ErrorTextBlock.Text = "The Json code in this program didn't work. Here's the automatic error message it made: \"" + ex.Message + "\"";
-                        errorWindow.ShowDialog();
+                        ShowUpdateWindow("The Json code in this program didn't work. Here's the automatic error message it made: \"" + ex.Message + "\"", "Check for updates");
                     }
                     catch (HttpRequestException ex) when (ex.StatusCode == System.Net.HttpStatusCode.Forbidden)
                     {
-                        ErrorWindow errorWindow = new();
-                        errorWindow.Owner = this;
-                        errorWindow.Title = "Check for updates";
-                        errorWindow.ErrorTextBlock.Text = "HTTP error 403: GitHub is saying you're sending them too many requests, so... slow down, I guess? " +
-                            "Here's the automatic error message: \"" + ex.Message + "\"";
-                        errorWindow.ShowDialog();
+                        ShowUpdateWindow("HTTP error 403: GitHub is saying you're sending them too many requests, so... slow down, I guess? " +
+                            "Here's the automatic error message: \"" + ex.Message + "\"", "Check for updates");
                     }
                     catch (HttpRequestException ex)
                     {
-                        ErrorWindow errorWindow = new();
-                        errorWindow.Owner = this;
-                        errorWindow.Title = "Check for updates";
-                        errorWindow.ErrorTextBlock.Text = "HTTP error. Here's the automatic error message: \"" + ex.Message + "\"";
-                        errorWindow.ShowDialog();
+                        ShowUpdateWindow("HTTP error. Here's the automatic error message: \"" + ex.Message + "\"", "Check for updates");
                     }
                 }
                 catch (Exception ex)
                 {
-                    ErrorWindow errorWindow = new();
-                    errorWindow.Owner = this;
-                    errorWindow.Title = "Check for updates";
-                    errorWindow.ErrorTextBlock.Text = "Oh dear, it looks this program had a hard time making the needed connection to GitHub. Make sure you're connected to the internet " +
-                        "and your lousy firewall/VPN isn't blocking the connection. Here's the automated error message: \"" + ex.Message + "\"";
-                    errorWindow.ShowDialog();
+                    ShowUpdateWindow("Oh dear, it looks this program had a hard time making the needed connection to GitHub. Make sure you're connected to the internet " +
+                        "and your lousy firewall/VPN isn't blocking the connection. Here's the automated error message: \"" + ex.Message + "\"", "Check for updates");
                 }
             }
         }
@@ -142,6 +124,16 @@ namespace WPF.Template
             ErrorWindow errorWindow = new ErrorWindow();
             errorWindow.ErrorTextBlock.Text = errorMessage;
             errorWindow.Owner = this;
+            errorWindow.ShowDialog();
+        }
+
+        private void ShowUpdateWindow(string errorMessage, string customTitle)
+        {
+            ErrorWindow errorWindow = new ErrorWindow();
+            errorWindow.ErrorTextBlock.Text = errorMessage;
+            errorWindow.Owner = this;
+            errorWindow.Title = customTitle;
+            SystemSounds.Exclamation.Play();
             errorWindow.ShowDialog();
         }
 

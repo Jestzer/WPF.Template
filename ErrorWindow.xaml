@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WPF.Template"
         mc:Ignorable="d"
+        KeyDown="CloseWithEnterKey"
         Title="Error" Height="250" Width="450"
     WindowStyle="None" AllowsTransparency="True" ResizeMode="NoResize" WindowStartupLocation="CenterOwner">
     <Border BorderBrush="Gray" BorderThickness="1">

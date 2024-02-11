@@ -24,6 +24,14 @@ namespace WPF.Template
             Close();
         }
 
+        private void CloseWithEnterKey(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                Close();
+            }
+        }
+
         private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
         {
             // Open the URL in the default browser.
