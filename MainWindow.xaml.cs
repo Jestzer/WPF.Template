@@ -106,6 +106,10 @@ namespace WPF.Template
                         ShowUpdateWindow("HTTP error 403: GitHub is saying you're sending them too many requests, so... slow down, I guess? " +
                             "Here's the automatic error message: \"" + ex.Message + "\"", "Check for updates");
                     }
+                    catch (HttpRequestException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+                    {
+                        ShowUpdateWindow("HTTP error 404: when checking for updates, we were told the page to check for updates doesn't exist.", "Check for updates");
+                    }
                     catch (HttpRequestException ex)
                     {
                         ShowUpdateWindow("HTTP error. Here's the automatic error message: \"" + ex.Message + "\"", "Check for updates");
